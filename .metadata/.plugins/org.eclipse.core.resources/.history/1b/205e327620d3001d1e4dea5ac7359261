@@ -1,0 +1,10 @@
+/**
+ * 
+ */
+/**
+ * @author videv
+ *
+ */
+module Practicum_Project {
+	requires java.desktop;
+}

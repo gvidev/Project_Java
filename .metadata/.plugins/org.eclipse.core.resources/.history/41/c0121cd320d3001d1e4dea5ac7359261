@@ -1,0 +1,12 @@
+/**
+ * 
+ */
+package uni.plovdiv;
+
+/**
+ * @author videv
+ *
+ */
+public class DbConnection {
+
+}
