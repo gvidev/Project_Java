@@ -23,7 +23,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.Font;
 
 
 
@@ -32,13 +36,22 @@ import java.awt.event.ActionEvent;
 public class MainFrame extends JFrame {
 
 	private JPanel contentPane;
+	
 	private StudentAddFrame stdAddFrame;
+	private StudentEditFrame stdEditFrame;
+	
+	
 	private CourseAddFrame crsAddFrame;
 	private AssessmentAddFrame asmAddFrame;
+	
+	
+	public static ArrayList<Integer> students_ids ;
+	public static ArrayList<Integer> courses_ids;
+	public static ArrayList<Integer> assessments_ids ;
 	Connection connection;
 	
-//	PreparedStatement state;
-//	ResultSet result;
+	PreparedStatement state;
+	//ResultSet result;
 
 	/**
 	 * Launch the application.
@@ -90,6 +103,26 @@ public class MainFrame extends JFrame {
 		tabbedPane.addTab("Students", null, studentsPanel, null);
 		studentsPanel.setLayout(null);
 		
+		@SuppressWarnings("rawtypes")   
+		JList allStudentsList = new JList();
+		allStudentsList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		allStudentsList.setFocusable(false);
+		allStudentsList.setBounds(97, 108, 622, 378);
+		studentsPanel.add(allStudentsList);
+		students_ids = new ArrayList<Integer>();
+		try {
+			populateJList(allStudentsList, "STUDENTS",students_ids);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		JLabel errorLabel = new JLabel("");
+		errorLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		errorLabel.setBounds(144, 497, 516, 26);
+		studentsPanel.add(errorLabel);
+		
 		JButton stdAddButton = new JButton("Add new Student");
 		stdAddButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -115,12 +148,69 @@ public class MainFrame extends JFrame {
 		studentsPanel.add(stdAddButton);
 		
 		JButton stdEditButton = new JButton("Edit Student");
+		stdEditButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				var item = allStudentsList.getSelectedValue().toString();
+				int selectedItemIndex = allStudentsList.getSelectedIndex();
+				
+				if(selectedItemIndex != -1) {
+					stdEditFrame = new StudentEditFrame(selectedItemIndex,item);
+					errorLabel.setText("");
+					setEnabled(false);
+					
+					stdEditFrame.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosing(WindowEvent e) {
+							setEnabled(true);
+						}
+						
+					});
+				}else{
+					errorLabel.setForeground(new Color(250, 0, 33));
+					errorLabel.setText("You have not select item. Please select and try again!");
+				}
+				
+				
+				
+			}
+		});
 		stdEditButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		stdEditButton.setFocusable(false);
 		stdEditButton.setBounds(253, 28, 140, 23);
 		studentsPanel.add(stdEditButton);
 		
 		JButton stdDeleteButton = new JButton("Delete Student");
+		stdDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+                int selectedItemIndex = allStudentsList.getSelectedIndex();
+                
+				
+				if(selectedItemIndex != -1) {
+					//int STUDENT_ID = selectedItemIndex +1;
+					int STUDENT_ID = students_ids.get(selectedItemIndex);
+					connection = DbConnection.getConnection();
+					String sql = "DELETE FROM STUDENTS WHERE STUDENT_ID = " + STUDENT_ID;
+					
+					try {
+						state=connection.prepareStatement(sql);
+						state.execute();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					errorLabel.setForeground(new Color(0, 168, 28));
+					errorLabel.setText("You have succsessfully delete the Student");
+				}else{
+					errorLabel.setForeground(new Color(250, 0, 33));
+					errorLabel.setText("You have not select item. Please select and try again!");
+				}
+				
+			}
+		});
 		stdDeleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		stdDeleteButton.setFocusable(false);
 		stdDeleteButton.setBounds(403, 28, 135, 23);
@@ -132,19 +222,25 @@ public class MainFrame extends JFrame {
 		stdSearchButton.setBounds(548, 28, 169, 23);
 		studentsPanel.add(stdSearchButton);
 		
+		JButton refreshButton = new JButton("Refresh list");
+		refreshButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				errorLabel.setText("");
+				try {
+					students_ids = new ArrayList<Integer>();
+					populateJList(allStudentsList, "STUDENTS",students_ids);
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		refreshButton.setBounds(561, 85, 159, 23);
+		studentsPanel.add(refreshButton);
 		
-		@SuppressWarnings("rawtypes")   
-		JList allStudentsList = new JList();
-		allStudentsList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		allStudentsList.setFocusable(false);
-		allStudentsList.setBounds(97, 108, 622, 378);
-		studentsPanel.add(allStudentsList);
-		try {
-			populateJList(allStudentsList, "STUDENTS");
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
+		
+		
 		
 		
 		
@@ -212,7 +308,8 @@ public class MainFrame extends JFrame {
 		allCoursesList.setBounds(97, 108, 622, 378);
 		coursesPanel.add(allCoursesList);
 		try {
-			populateJList(allCoursesList,"COURSES");
+			courses_ids = new ArrayList<Integer>();
+			populateJList(allCoursesList,"COURSES",courses_ids);
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -290,8 +387,8 @@ public class MainFrame extends JFrame {
 
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void populateJList(JList list, String table) throws SQLException
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void populateJList(JList list, String table, ArrayList<Integer> ids) throws SQLException
 	{
 		connection = DbConnection.getConnection();
 	    DefaultListModel model = new DefaultListModel(); //create a new list model
@@ -299,17 +396,20 @@ public class MainFrame extends JFrame {
 
 	    Statement statement = connection.createStatement();
 	    ResultSet resultSet = statement.executeQuery(query); //run your query
+	    int counter = 1;
 
 	    while (resultSet.next()) //go through each row that your query returns
 	    {
 	        ResultSetMetaData rsmd =  resultSet.getMetaData();
 	        StringBuilder x = new StringBuilder();
-	        int numColumns = rsmd.getColumnCount();
+	        int numColumns = rsmd.getColumnCount();        
+	        x.append(counter + ". | ");
+	        counter++;
 	        
 	        for(int i =2; i<=numColumns; i++) {
-	        	
 	        	x.append(resultSet.getString(i) + " | ");
 	        }
+	        ids.add(Integer.parseInt(resultSet.getString(1)));
 	        model.addElement(x); //add each item to the model
 	    }
 	    list.setModel(model);
