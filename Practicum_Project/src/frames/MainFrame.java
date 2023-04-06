@@ -45,7 +45,10 @@ public class MainFrame extends JFrame {
 	private CourseAddFrame crsAddFrame;
 	private CourseEditFrame crsEditFrame;
 	private CourseSearchFrame crsSearchFrame;
+	
 	private AssessmentAddFrame asmAddFrame;
+	private AssessmentEditFrame asmEditFrame;
+	private AssessmentSearchFrame asmSearchFrame;
 	
 	
 	public static ArrayList<Integer> students_ids ;
@@ -501,6 +504,26 @@ public class MainFrame extends JFrame {
 		tabbedPane.addTab("Assessments", null, assessmentsPanel, null);
 		assessmentsPanel.setLayout(null);
 		
+		@SuppressWarnings("rawtypes")   
+		JList allAssessmentsList = new JList();
+		allAssessmentsList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		allAssessmentsList.setFocusable(false);
+		allAssessmentsList.setBounds(97, 108, 622, 378);
+		assessmentsPanel.add(allAssessmentsList);
+		assessments_ids = new ArrayList<Integer>();
+		try {
+			populateJList(allAssessmentsList, "ASSESSMENTS",assessments_ids);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		JLabel errorLabel3 = new JLabel("");
+		errorLabel3.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		errorLabel3.setHorizontalAlignment(SwingConstants.CENTER);
+		errorLabel3.setBounds(144, 497, 516, 26);
+		assessmentsPanel.add(errorLabel3);
+		
 		JButton asmAddButton = new JButton("Add new Assessment");
 		asmAddButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -512,6 +535,14 @@ public class MainFrame extends JFrame {
 	            asmAddFrame.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
+						errorLabel3.setText("");
+						try {
+							assessments_ids = new ArrayList<Integer>();
+							populateJList(allAssessmentsList, "ASSESSMENTS",assessments_ids);
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						setEnabled(true);
 					}
 					
@@ -526,29 +557,129 @@ public class MainFrame extends JFrame {
 		assessmentsPanel.add(asmAddButton);
 		
 		JButton asmEditButton = new JButton("Edit Assessment");
+		asmEditButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				
+				int selectedItemIndex = allAssessmentsList.getSelectedIndex();
+				
+				if(selectedItemIndex != -1) {
+					var item = allAssessmentsList.getSelectedValue().toString();
+					asmEditFrame = new AssessmentEditFrame(selectedItemIndex,item);
+					errorLabel3.setText("");
+					setEnabled(false);
+					
+					asmEditFrame.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosing(WindowEvent e) {
+							errorLabel3.setText("");
+							try {
+								assessments_ids = new ArrayList<Integer>();
+								populateJList(allAssessmentsList, "ASSESSMENTS",assessments_ids);
+							} catch (SQLException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							setEnabled(true);
+						}
+						
+					});
+				}else{
+					errorLabel3.setForeground(new Color(250, 0, 33));
+					errorLabel3.setText("You have not select item. Please select and try again!");
+				}
+				
+				
+				
+			}
+		});
 		asmEditButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		asmEditButton.setFocusable(false);
 		asmEditButton.setBounds(253, 28, 140, 23);
 		assessmentsPanel.add(asmEditButton);
 		
 		JButton asmDeleteButton = new JButton("Delete Assessment");
+		asmDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+                int selectedItemIndex = allAssessmentsList.getSelectedIndex();
+                
+				
+				if(selectedItemIndex != -1) {
+					//int STUDENT_ID = selectedItemIndex +1;
+					int ASESSMENT_ID = assessments_ids.get(selectedItemIndex);
+					connection = DbConnection.getConnection();
+					String sql = "DELETE FROM ASSESSMENTS WHERE ASSESSMENT_ID = " + ASESSMENT_ID;
+					
+					try {
+						state=connection.prepareStatement(sql);
+						state.execute();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						assessments_ids = new ArrayList<Integer>();
+						populateJList(allAssessmentsList, "ASSESSMENTS",assessments_ids);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					errorLabel3.setForeground(new Color(0, 168, 28));
+					errorLabel3.setText("You have succsessfully delete the Assessment");
+				}else{
+					errorLabel3.setForeground(new Color(250, 0, 33));
+					errorLabel3.setText("You have not select item. Please select and try again!");
+				}
+				
+			}
+		});
 		asmDeleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		asmDeleteButton.setFocusable(false);
 		asmDeleteButton.setBounds(403, 28, 135, 23);
 		assessmentsPanel.add(asmDeleteButton);
 		
 		JButton asmSearchButton = new JButton("Search Assessment");
+		asmSearchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				asmSearchFrame = new AssessmentSearchFrame();
+				setEnabled(false);
+	            
+	            
+				asmSearchFrame.addWindowListener(new WindowAdapter() {
+					@SuppressWarnings("static-access")
+					@Override
+					public void windowClosing(WindowEvent e) {
+						if(asmSearchFrame.findeditemsId != null) {
+							int[] findedIds = asmSearchFrame.findeditemsId.stream().mapToInt(Integer::intValue).toArray();
+							ArrayList<Integer> indexesOfList = new ArrayList<Integer>();
+							for(int i = 0; i< findedIds.length;i++) {
+								for(int k = 0; k<assessments_ids.size(); k++) {
+									if(findedIds[i]==assessments_ids.get(k)) {
+										indexesOfList.add(k);
+									}
+								}
+							}
+							if(!indexesOfList.isEmpty()) {
+								int[] listIndex = indexesOfList.stream().mapToInt(Integer::intValue).toArray();
+								allAssessmentsList.setSelectedIndices(listIndex);
+								
+							}
+							
+						}
+						setEnabled(true);
+					}
+				});
+				
+			}
+		});
 		asmSearchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		asmSearchButton.setFocusable(false);
 		asmSearchButton.setBounds(548, 28, 169, 23);
 		assessmentsPanel.add(asmSearchButton);
-		
-		@SuppressWarnings("rawtypes")
-		JList list3 = new JList();
-		list3.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		list3.setFocusable(false);
-		list3.setBounds(97, 108, 622, 378);
-		assessmentsPanel.add(list3);
 		
 		contentPane.setVisible(true);
 
