@@ -39,9 +39,12 @@ public class MainFrame extends JFrame {
 	
 	private StudentAddFrame stdAddFrame;
 	private StudentEditFrame stdEditFrame;
+	private StudentSearchFrame stdSearchFrame;
 	
 	
 	private CourseAddFrame crsAddFrame;
+	private CourseEditFrame crsEditFrame;
+	private CourseSearchFrame crsSearchFrame;
 	private AssessmentAddFrame asmAddFrame;
 	
 	
@@ -134,6 +137,14 @@ public class MainFrame extends JFrame {
 	            stdAddFrame.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
+						errorLabel.setText("");
+						try {
+							students_ids = new ArrayList<Integer>();
+							populateJList(allStudentsList, "STUDENTS",students_ids);
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						setEnabled(true);
 					}
 					
@@ -152,10 +163,11 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				
-				var item = allStudentsList.getSelectedValue().toString();
+				
 				int selectedItemIndex = allStudentsList.getSelectedIndex();
 				
 				if(selectedItemIndex != -1) {
+					var item = allStudentsList.getSelectedValue().toString();
 					stdEditFrame = new StudentEditFrame(selectedItemIndex,item);
 					errorLabel.setText("");
 					setEnabled(false);
@@ -163,6 +175,14 @@ public class MainFrame extends JFrame {
 					stdEditFrame.addWindowListener(new WindowAdapter() {
 						@Override
 						public void windowClosing(WindowEvent e) {
+							errorLabel.setText("");
+							try {
+								students_ids = new ArrayList<Integer>();
+								populateJList(allStudentsList, "STUDENTS",students_ids);
+							} catch (SQLException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 							setEnabled(true);
 						}
 						
@@ -201,6 +221,13 @@ public class MainFrame extends JFrame {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					try {
+						students_ids = new ArrayList<Integer>();
+						populateJList(allStudentsList, "STUDENTS",students_ids);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					
 					errorLabel.setForeground(new Color(0, 168, 28));
 					errorLabel.setText("You have succsessfully delete the Student");
@@ -217,29 +244,44 @@ public class MainFrame extends JFrame {
 		studentsPanel.add(stdDeleteButton);
 		
 		JButton stdSearchButton = new JButton("Search Student");
+		stdSearchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				stdSearchFrame = new StudentSearchFrame();
+				setEnabled(false);
+	            
+	            
+				stdSearchFrame.addWindowListener(new WindowAdapter() {
+					@SuppressWarnings("static-access")
+					@Override
+					public void windowClosing(WindowEvent e) {
+						if(stdSearchFrame.findeditemsId != null) {
+							int[] findedIds = stdSearchFrame.findeditemsId.stream().mapToInt(Integer::intValue).toArray();
+							ArrayList<Integer> indexesOfList = new ArrayList<Integer>();
+							for(int i = 0; i< findedIds.length;i++) {
+								for(int k = 0; k<students_ids.size(); k++) {
+									if(findedIds[i]==students_ids.get(k)) {
+										indexesOfList.add(k);
+									}
+								}
+							}
+							if(!indexesOfList.isEmpty()) {
+								int[] listIndex = indexesOfList.stream().mapToInt(Integer::intValue).toArray();
+								allStudentsList.setSelectedIndices(listIndex);
+								
+							}
+							
+						}
+						setEnabled(true);
+					}
+				});
+				
+			}
+		});
 		stdSearchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		stdSearchButton.setFocusable(false);
 		stdSearchButton.setBounds(548, 28, 169, 23);
 		studentsPanel.add(stdSearchButton);
-		
-		JButton refreshButton = new JButton("Refresh list");
-		refreshButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				errorLabel.setText("");
-				try {
-					students_ids = new ArrayList<Integer>();
-					populateJList(allStudentsList, "STUDENTS",students_ids);
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		refreshButton.setBounds(561, 85, 159, 23);
-		studentsPanel.add(refreshButton);
-		
-		
-		
 		
 		
 		
@@ -259,6 +301,26 @@ public class MainFrame extends JFrame {
 		tabbedPane.addTab("Courses", null, coursesPanel, null);
 		coursesPanel.setLayout(null);
 		
+		@SuppressWarnings("rawtypes")   
+		JList allCoursesList = new JList();
+		allCoursesList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
+		allCoursesList.setFocusable(false);
+		allCoursesList.setBounds(97, 108, 622, 378);
+		coursesPanel.add(allCoursesList);
+		courses_ids = new ArrayList<Integer>();
+		try {
+			populateJList(allCoursesList, "COURSES",courses_ids);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		JLabel errorLabel2 = new JLabel("");
+		errorLabel2.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		errorLabel2.setHorizontalAlignment(SwingConstants.CENTER);
+		errorLabel2.setBounds(144, 497, 516, 26);
+		coursesPanel.add(errorLabel2);
+		
 		JButton crsAddButton = new JButton("Add new Course");
 		crsAddButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -270,6 +332,14 @@ public class MainFrame extends JFrame {
 	            crsAddFrame.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosing(WindowEvent e) {
+						errorLabel2.setText("");
+						try {
+							courses_ids = new ArrayList<Integer>();
+							populateJList(allCoursesList, "COURSES",courses_ids);
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 						setEnabled(true);
 					}
 					
@@ -284,36 +354,133 @@ public class MainFrame extends JFrame {
 		coursesPanel.add(crsAddButton);
 		
 		JButton crsEditButton = new JButton("Edit Course");
+		crsEditButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				
+				int selectedItemIndex = allCoursesList.getSelectedIndex();
+				
+				if(selectedItemIndex != -1) {
+					var item = allCoursesList.getSelectedValue().toString();
+					crsEditFrame = new CourseEditFrame(selectedItemIndex,item);
+					errorLabel2.setText("");
+					setEnabled(false);
+					
+					crsEditFrame.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosing(WindowEvent e) {
+							errorLabel2.setText("");
+							try {
+								courses_ids = new ArrayList<Integer>();
+								populateJList(allCoursesList, "COURSES",courses_ids);
+							} catch (SQLException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							setEnabled(true);
+						}
+						
+					});
+				}else{
+					errorLabel2.setForeground(new Color(250, 0, 33));
+					errorLabel2.setText("You have not select item. Please select and try again!");
+				}
+				
+				
+				
+			}
+		});
 		crsEditButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		crsEditButton.setFocusable(false);
 		crsEditButton.setBounds(253, 28, 140, 23);
 		coursesPanel.add(crsEditButton);
 		
 		JButton crsDeleteButton = new JButton("Delete Course");
+		crsDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+                int selectedItemIndex = allCoursesList.getSelectedIndex();
+                
+				
+				if(selectedItemIndex != -1) {
+					//int STUDENT_ID = selectedItemIndex +1;
+					int COURSE_ID = courses_ids.get(selectedItemIndex);
+					connection = DbConnection.getConnection();
+					String sql = "DELETE FROM COURSES WHERE COURSE_ID = " + COURSE_ID;
+					
+					try {
+						state=connection.prepareStatement(sql);
+						state.execute();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					try {
+						courses_ids = new ArrayList<Integer>();
+						populateJList(allCoursesList, "COURSES",courses_ids);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					errorLabel2.setForeground(new Color(0, 168, 28));
+					errorLabel2.setText("You have succsessfully delete the Course");
+				}else{
+					errorLabel2.setForeground(new Color(250, 0, 33));
+					errorLabel2.setText("You have not select item. Please select and try again!");
+				}
+				
+			}
+		});
 		crsDeleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		crsDeleteButton.setFocusable(false);
 		crsDeleteButton.setBounds(403, 28, 135, 23);
 		coursesPanel.add(crsDeleteButton);
 		
 		JButton crsSearchButton = new JButton("Search Course");
+		crsSearchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				crsSearchFrame = new CourseSearchFrame();
+				setEnabled(false);
+	            
+	            
+				crsSearchFrame.addWindowListener(new WindowAdapter() {
+					@SuppressWarnings("static-access")
+					@Override
+					public void windowClosing(WindowEvent e) {
+						if(crsSearchFrame.findeditemsId != null) {
+							int[] findedIds = crsSearchFrame.findeditemsId.stream().mapToInt(Integer::intValue).toArray();
+							ArrayList<Integer> indexesOfList = new ArrayList<Integer>();
+							for(int i = 0; i< findedIds.length;i++) {
+								for(int k = 0; k<courses_ids.size(); k++) {
+									if(findedIds[i]==courses_ids.get(k)) {
+										indexesOfList.add(k);
+									}
+								}
+							}
+							if(!indexesOfList.isEmpty()) {
+								int[] listIndex = indexesOfList.stream().mapToInt(Integer::intValue).toArray();
+								allCoursesList.setSelectedIndices(listIndex);
+								
+							}
+							
+						}
+						setEnabled(true);
+					}
+				});
+				
+			}
+		});
 		crsSearchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		crsSearchButton.setFocusable(false);
 		crsSearchButton.setBounds(548, 28, 169, 23);
 		coursesPanel.add(crsSearchButton);
 		
-		@SuppressWarnings("rawtypes")
-		JList allCoursesList = new JList();
-		allCoursesList.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		allCoursesList.setFocusable(false);
-		allCoursesList.setBounds(97, 108, 622, 378);
-		coursesPanel.add(allCoursesList);
-		try {
-			courses_ids = new ArrayList<Integer>();
-			populateJList(allCoursesList,"COURSES",courses_ids);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
+		
+		
 		
 		
 		

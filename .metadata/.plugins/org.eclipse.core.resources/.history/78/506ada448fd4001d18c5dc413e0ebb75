@@ -1,0 +1,63 @@
+package frames;
+
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import java.awt.Font;
+import javax.swing.SwingConstants;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+@SuppressWarnings("serial")
+public class StudentSearchFrame extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField textField;
+
+	
+	/**
+	 * Create the frame.
+	 */
+	public StudentSearchFrame() {
+		setTitle("Search Students");
+		setBounds(150,150,439,599);
+        setResizable(false);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);	
+        contentPane.setLayout(null);
+        
+        JComboBox comboBox = new JComboBox();
+        comboBox.setBounds(150, 115, 139, 31);
+        contentPane.add(comboBox);
+        
+        JLabel lblNewLabel = new JLabel("Search By:");
+        lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        lblNewLabel.setBounds(150, 80, 139, 22);
+        contentPane.add(lblNewLabel);
+        
+        textField = new JTextField();
+        textField.setBounds(97, 177, 240, 44);
+        contentPane.add(textField);
+        textField.setColumns(10);
+        
+        JButton searchButton = new JButton("Search");
+        searchButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		setDefaultCloseOperation(searchButton.doClick());
+        	}
+        });
+        searchButton.setBounds(158, 253, 113, 44);
+        contentPane.add(searchButton);
+        
+        
+        
+        setVisible(true);
+	}
+}
