@@ -47,7 +47,7 @@ public class AssessmentEditFrame extends JFrame {
 		String creditHours = data[3].trim();
 		String description = data[4].trim();
 
-		setTitle("Edit Assessment");
+		setTitle("Edit Course");
 		setBounds(150,150,800,600);
         setResizable(false);
 		contentPane = new JPanel();

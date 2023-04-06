@@ -56,19 +56,19 @@ public class AssessmentAddFrame extends JFrame {
 		contentPane.setLayout(null);
 		
 		JLabel studentFacultyNumberLabel = new JLabel("Student Faculty Number:");
-		studentFacultyNumberLabel.setBounds(88, 70, 138, 14);
+		studentFacultyNumberLabel.setBounds(113, 72, 120, 14);
 		contentPane.add(studentFacultyNumberLabel);
 		
 		JLabel courseNameLabel = new JLabel("Course Name:");
-		courseNameLabel.setBounds(88, 114, 120, 14);
+		courseNameLabel.setBounds(113, 115, 120, 14);
 		contentPane.add(courseNameLabel);
 		
 		JLabel notesLabel = new JLabel("Notes:");
-		notesLabel.setBounds(88, 202, 120, 14);
+		notesLabel.setBounds(113, 202, 120, 14);
 		contentPane.add(notesLabel);
 		
 		JLabel finalGradeLabel = new JLabel("Final GRADE:");
-		finalGradeLabel.setBounds(88, 161, 120, 14);
+		finalGradeLabel.setBounds(113, 162, 120, 14);
 		contentPane.add(finalGradeLabel);
 		
 		notesTF = new JTextField();

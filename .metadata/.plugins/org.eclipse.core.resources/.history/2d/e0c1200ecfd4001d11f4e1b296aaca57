@@ -81,27 +81,21 @@ public class AssessmentSearchFrame extends JFrame {
         			
         			int selected = comboBox.getSelectedIndex();
         			String searchBy = null;
-        			String table = null;
-        			String join = null;
         			String input = inputTextField.getText();
         			
         			switch(selected) {
         			case 0:
-        				searchBy = "STUDENT_NAME";
-        				table = "STUDENTS";
-        				join = "STUDENT_ID";
+        				searchBy = "COURSE_NAME";
         				break;
         				
         			case 1:
-        				searchBy = "COURSE_NAME";
-        				table = "COURSES";
-        				join = "COURSE_ID";
+        				searchBy = "TEACHER_NAME";
         				break;
         			}
         			
         			conn = DbConnection.getConnection();
         			Statement statement;
-        			String sql = "SELECT * FROM ASSESSMENTS JOIN " + table + " ON ASSESSMENTS."+join+" = " + table + "." +join+" WHERE "+ searchBy + " LIKE '%" + input + "%'" ;
+        			String sql = "SELECT * FROM COURSES WHERE " + searchBy + " LIKE '%" + input + "%'" ;
         			findeditemsId = new ArrayList<Integer>();
         			
         			try {

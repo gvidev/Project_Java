@@ -553,7 +553,7 @@ public class MainFrame extends JFrame {
 		
 		asmAddButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		asmAddButton.setFocusable(false);
-		asmAddButton.setBounds(59, 28, 169, 23);
+		asmAddButton.setBounds(97, 28, 146, 23);
 		assessmentsPanel.add(asmAddButton);
 		
 		JButton asmEditButton = new JButton("Edit Assessment");
@@ -596,7 +596,7 @@ public class MainFrame extends JFrame {
 		});
 		asmEditButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		asmEditButton.setFocusable(false);
-		asmEditButton.setBounds(238, 28, 154, 23);
+		asmEditButton.setBounds(253, 28, 140, 23);
 		assessmentsPanel.add(asmEditButton);
 		
 		JButton asmDeleteButton = new JButton("Delete Assessment");
@@ -638,7 +638,7 @@ public class MainFrame extends JFrame {
 		});
 		asmDeleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		asmDeleteButton.setFocusable(false);
-		asmDeleteButton.setBounds(402, 28, 153, 23);
+		asmDeleteButton.setBounds(403, 28, 135, 23);
 		assessmentsPanel.add(asmDeleteButton);
 		
 		JButton asmSearchButton = new JButton("Search Assessment");
@@ -678,7 +678,7 @@ public class MainFrame extends JFrame {
 		});
 		asmSearchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		asmSearchButton.setFocusable(false);
-		asmSearchButton.setBounds(565, 28, 183, 23);
+		asmSearchButton.setBounds(548, 28, 169, 23);
 		assessmentsPanel.add(asmSearchButton);
 		
 		contentPane.setVisible(true);
