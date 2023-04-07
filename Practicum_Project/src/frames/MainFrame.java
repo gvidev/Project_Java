@@ -512,7 +512,7 @@ public class MainFrame extends JFrame {
 		assessmentsPanel.add(allAssessmentsList);
 		assessments_ids = new ArrayList<Integer>();
 		try {
-			populateJList(allAssessmentsList, "ASSESSMENTS",assessments_ids);
+			populateJListAssessments(allAssessmentsList, "ASSESSMENTS",assessments_ids);
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -538,7 +538,7 @@ public class MainFrame extends JFrame {
 						errorLabel3.setText("");
 						try {
 							assessments_ids = new ArrayList<Integer>();
-							populateJList(allAssessmentsList, "ASSESSMENTS",assessments_ids);
+							populateJListAssessments(allAssessmentsList, "ASSESSMENTS",assessments_ids);
 						} catch (SQLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -576,7 +576,7 @@ public class MainFrame extends JFrame {
 							errorLabel3.setText("");
 							try {
 								assessments_ids = new ArrayList<Integer>();
-								populateJList(allAssessmentsList, "ASSESSMENTS",assessments_ids);
+								populateJListAssessments(allAssessmentsList, "ASSESSMENTS",assessments_ids);
 							} catch (SQLException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -621,7 +621,7 @@ public class MainFrame extends JFrame {
 					}
 					try {
 						assessments_ids = new ArrayList<Integer>();
-						populateJList(allAssessmentsList, "ASSESSMENTS",assessments_ids);
+						populateJListAssessments(allAssessmentsList, "ASSESSMENTS",assessments_ids);
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -715,5 +715,51 @@ public class MainFrame extends JFrame {
 	    resultSet.close();
 	    statement.close();
 
+	}
+	
+	
+	@SuppressWarnings({ "unchecked", "rawtypes"})
+	private void populateJListAssessments(JList list, String table, ArrayList<Integer> ids) throws SQLException
+	{
+		connection = DbConnection.getConnection();
+	    DefaultListModel model = new DefaultListModel(); //create a new list model
+	    String query = "SELECT * FROM " + table;
+
+	    Statement statement = connection.createStatement();
+	    ResultSet resultSet = statement.executeQuery(query); //run your query
+	    int counter = 1;
+
+	    while (resultSet.next()) //go through each row that your query returns
+	    {
+	        ResultSetMetaData rsmd =  resultSet.getMetaData();
+	        StringBuilder x = new StringBuilder();
+	        int numColumns = rsmd.getColumnCount();        
+	        x.append(counter + ". | ");
+	        counter++;
+	        String studentFacultyNumber = getFromId("STUDENTS","FACULTY_NUMBER","STUDENT_ID",Integer.parseInt(resultSet.getString(2)));
+        	String courseName = getFromId("COURSES","COURSE_NAME","COURSE_ID", Integer.parseInt(resultSet.getString(3)));
+        	x.append(studentFacultyNumber + " | ");
+        	x.append(courseName + " | ");
+	        for(int i =4; i<=numColumns; i++) {
+	        	
+	        	x.append(resultSet.getString(i) + " | ");
+	        }
+	        ids.add(Integer.parseInt(resultSet.getString(1)));
+	        model.addElement(x); //add each item to the model
+	    }
+	    list.setModel(model);
+
+	    resultSet.close();
+	    statement.close();
+
+	}
+	
+	private String getFromId(String table,String columnToGet,String columnToSearch,int Id) throws SQLException {
+		connection = DbConnection.getConnection();
+		String query = "SELECT TOP(1) "+columnToGet+ " FROM " + table +" WHERE " + columnToSearch +" = "  + Id;
+		Statement statement = connection.createStatement();
+		 ResultSet resultSet = statement.executeQuery(query);
+		 resultSet.next();
+		 return resultSet.getString(1);
 	}
 }

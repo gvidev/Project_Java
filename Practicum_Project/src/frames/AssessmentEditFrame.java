@@ -9,7 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,18 +22,18 @@ import javax.swing.border.EmptyBorder;
 
 import repository.DbConnection;
 
+import javax.swing.JComboBox;
+
 @SuppressWarnings("serial")
 public class AssessmentEditFrame extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField courseNameTF;
-	private JTextField teacherNameTF;
-	private JTextField creditHoursTF;
-	private JTextField descriptionTF;
+	private JTextField notesTF;
 	
     Connection conn;
-	
 	PreparedStatement state;
+	Statement student_state;
+	Statement course_state;
 	ResultSet result;
 
 	
@@ -39,13 +41,14 @@ public class AssessmentEditFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public AssessmentEditFrame(int selectedItemIndex, String selectedItem) {
 		
 		String[] data = selectedItem.split("\\|");
-		String courseName  = data[1].trim();
-		String teacherName = data[2].trim();
-		String creditHours = data[3].trim();
-		String description = data[4].trim();
+		String studentFacultyNumber  = data[1].trim();
+		String courseName = data[2].trim();
+		String finalGrade = data[3].trim();
+		String notes = data[4].trim();
 
 		setTitle("Edit Assessment");
 		setBounds(150,150,800,600);
@@ -55,50 +58,60 @@ public class AssessmentEditFrame extends JFrame {
 		setContentPane(contentPane);	
         contentPane.setLayout(null);
 		
+		JLabel studentFacultyNumberLabel = new JLabel("Student Faculty Number:");
+		studentFacultyNumberLabel.setBounds(78, 72, 155, 14);
+		contentPane.add(studentFacultyNumberLabel);
+		
 		JLabel courseNameLabel = new JLabel("Course Name:");
-		courseNameLabel.setBounds(113, 72, 120, 14);
+		courseNameLabel.setBounds(78, 115, 155, 14);
 		contentPane.add(courseNameLabel);
 		
-		JLabel teacherNameLabel = new JLabel("Teacher Name:");
-		teacherNameLabel.setBounds(113, 115, 120, 14);
-		contentPane.add(teacherNameLabel);
+		JLabel finalGradeLabel = new JLabel("Final GRADE:");
+		finalGradeLabel.setBounds(78, 163, 155, 14);
+		contentPane.add(finalGradeLabel);
 		
-		JLabel creditHoursLabel = new JLabel("Credit Hours:");
-		creditHoursLabel.setBounds(113, 211, 120, 14);
-		contentPane.add(creditHoursLabel);
+		JLabel notesLabel = new JLabel("Notes:");
+		notesLabel.setBounds(78, 215, 139, 14);
+		contentPane.add(notesLabel);
 		
-		JLabel descriptionLabel = new JLabel("Description:");
-		descriptionLabel.setBounds(113, 162, 104, 14);
-		contentPane.add(descriptionLabel);
+		notesTF = new JTextField();
+		notesTF.setBounds(243, 212, 331, 20);
+		notesTF.setText(notes);
+		contentPane.add(notesTF);
+		notesTF.setColumns(10);
 		
-		courseNameTF = new JTextField();
-		courseNameTF.setBounds(246, 69, 331, 20);
-		courseNameTF.setText(courseName);
-		contentPane.add(courseNameTF);
-		courseNameTF.setColumns(10);
+		JButton editAssessmentBtn = new JButton("Edit");
 		
-		teacherNameTF = new JTextField();
-		teacherNameTF.setBounds(246, 112, 331, 20);
-		teacherNameTF.setText(teacherName);
-		contentPane.add(teacherNameTF);
-		teacherNameTF.setColumns(10);
+		editAssessmentBtn.setBounds(358, 277, 89, 23);
+		contentPane.add(editAssessmentBtn);
 		
-		creditHoursTF = new JTextField();
-		creditHoursTF.setBounds(246, 208, 331, 20);
-		creditHoursTF.setText(creditHours);
-		contentPane.add(creditHoursTF);
-		creditHoursTF.setColumns(10);
+		JComboBox studentFacultyNumberCB = new JComboBox();
+		studentFacultyNumberCB.setBounds(243, 68, 331, 18);
+		contentPane.add(studentFacultyNumberCB);
+		try {
+			populateComboBox(studentFacultyNumberCB, "STUDENTS",7);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		studentFacultyNumberCB.setSelectedItem(studentFacultyNumber);
 		
-		descriptionTF = new JTextField();
-		descriptionTF.setBounds(246, 159, 331, 20);
-		descriptionTF.setText(description);
-		contentPane.add(descriptionTF);
-		descriptionTF.setColumns(10);
+		JComboBox courseNameCB = new JComboBox();
+		courseNameCB.setBounds(243, 107, 331, 22);
+		contentPane.add(courseNameCB);
+		try {
+			populateComboBox(courseNameCB, "COURSES",2);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		courseNameCB.setSelectedItem(courseName);
 		
-		JButton editCourseBtn = new JButton("Edit");
+		JComboBox finalGradeCB = new JComboBox();
+		finalGradeCB.setModel(new DefaultComboBoxModel(new String[] {"2", "3", "4", "5", "6"}));
+		finalGradeCB.setBounds(243, 160, 83, 20);
+		contentPane.add(finalGradeCB);
+		finalGradeCB.setSelectedItem(finalGrade);
 		
-		editCourseBtn.setBounds(359, 296, 89, 23);
-		contentPane.add(editCourseBtn);
+		
 		
 		JLabel ErrorLabel = new JLabel("");
 		ErrorLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -107,27 +120,40 @@ public class AssessmentEditFrame extends JFrame {
 		contentPane.add(ErrorLabel);
         
         
-		editCourseBtn.addActionListener(new ActionListener() {
+		editAssessmentBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String a = courseNameTF.getText();
-				String b = teacherNameTF.getText();
-				int c = Integer.parseInt(creditHoursTF.getText().toString());
-				String d = descriptionTF.getText();
-				if(a.isEmpty() || b.isEmpty() || creditHoursTF.getText().isEmpty() || d.isEmpty()) {
+				String a = studentFacultyNumberCB.getSelectedItem().toString();
+				String b = courseNameCB.getSelectedItem().toString();
+				int c = Integer.parseInt(finalGradeCB.getSelectedItem().toString());
+				String d = notesTF.getText();
+				
+				String student_sql = "SELECT  TOP(1) STUDENT_ID FROM STUDENTS WHERE FACULTY_NUMBER = '" + a + "'";
+				String course_sql = "SELECT  TOP(1) COURSE_ID FROM COURSES WHERE COURSE_NAME =  '" + b + "'";
+				
+				if(d.isEmpty()) {
 					ErrorLabel.setForeground(new Color(255, 51, 0));
 					ErrorLabel.setText("You have inserted wrong values or empty one!");
 				}else {
 					
 					conn=DbConnection.getConnection();
-					int COURSE_ID = MainFrame.courses_ids.get(selectedItemIndex);
-					String sql = "UPDATE COURSES "
-							+ " SET COURSE_NAME = ?, TEACHER_NAME = ?,CREDIT_HOURS = ?,DESCRIPTION = ? "
-							+ " WHERE COURSE_ID = " + COURSE_ID;
+					int ASSESSMENT_ID = MainFrame.assessments_ids.get(selectedItemIndex);
+					String sql = "UPDATE ASSESSMENTS "
+							+ " SET STUDENT_ID = ?, COURSE_ID = ?,FINAL_GRADE = ?,NOTES = ? "
+							+ " WHERE ASSESSMENT_ID = " + ASSESSMENT_ID;
 					
 					try {
+						student_state = conn.createStatement();
+						result = student_state.executeQuery(student_sql);
+						result.next();
+						int student_id = result.getInt(1);
+						course_state = conn.createStatement();
+						result = course_state.executeQuery(course_sql);
+						result.next();
+						int course_id = result.getInt(1);
+						
 						state=conn.prepareStatement(sql);
-						state.setString(1, a);
-						state.setString(2, b);
+						state.setInt(1, student_id);
+						state.setInt(2, course_id);
 						state.setInt(3,c);
 						state.setString(4, d);
 						state.execute();
@@ -138,7 +164,7 @@ public class AssessmentEditFrame extends JFrame {
 					}
 					
 					ErrorLabel.setForeground(new Color(4, 184, 25));
-					ErrorLabel.setText("The Course is updated succsessfully");
+					ErrorLabel.setText("The Assessment is updated succsessfully");
 					
 					
 				}
@@ -148,5 +174,25 @@ public class AssessmentEditFrame extends JFrame {
         
         setVisible(true);
 	}
+        
+	
+	    @SuppressWarnings({ "rawtypes", "unchecked" })
+		private void populateComboBox(JComboBox comboBox, String table, int column) throws SQLException{
+		conn = DbConnection.getConnection();
+	    String query = "SELECT * FROM " + table;
+	    DefaultComboBoxModel model = new DefaultComboBoxModel();
 
+	    Statement statement = conn.createStatement();
+	    ResultSet resultSet = statement.executeQuery(query); //run your query
+
+	    while (resultSet.next()) //go through each row that your query returns
+	    {
+	        model.addElement(resultSet.getString(column));       
+	    }
+	    comboBox.setModel(model);
+
+	    resultSet.close();
+	    statement.close();
+	
+	}
 }

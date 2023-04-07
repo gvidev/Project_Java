@@ -49,7 +49,7 @@ public class AssessmentSearchFrame extends JFrame {
         contentPane.setLayout(null);
         
         JComboBox comboBox = new JComboBox();
-        comboBox.setModel(new DefaultComboBoxModel(new String[] {"STUDENT_NAME", "COURSE_NAME"}));
+        comboBox.setModel(new DefaultComboBoxModel(new String[] {"Student Name", "Course Name"}));
         comboBox.setFocusable(false);
         comboBox.setBounds(150, 115, 139, 31);
         contentPane.add(comboBox);

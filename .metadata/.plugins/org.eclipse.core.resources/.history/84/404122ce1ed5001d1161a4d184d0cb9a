@@ -1,0 +1,174 @@
+package frames;
+
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import repository.DbConnection;
+
+import javax.swing.JComboBox;
+
+@SuppressWarnings("serial")
+public class AssessmentEditFrame extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField notesTF;
+	
+    Connection conn;
+	
+	PreparedStatement state;
+	ResultSet result;
+
+	
+
+	/**
+	 * Create the frame.
+	 */
+	public AssessmentEditFrame(int selectedItemIndex, String selectedItem) {
+		
+		String[] data = selectedItem.split("\\|");
+		String studentFacultyNumber  = data[1].trim();
+		String courseName = data[2].trim();
+		String finalGrade = data[3].trim();
+		String notes = data[4].trim();
+
+		setTitle("Edit Assessment");
+		setBounds(150,150,800,600);
+        setResizable(false);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);	
+        contentPane.setLayout(null);
+		
+		JLabel studentFacultyNumberLabel = new JLabel("Student Faculty Number:");
+		studentFacultyNumberLabel.setBounds(78, 72, 155, 14);
+		contentPane.add(studentFacultyNumberLabel);
+		
+		JLabel courseNameLabel = new JLabel("Course Name:");
+		courseNameLabel.setBounds(78, 115, 155, 14);
+		contentPane.add(courseNameLabel);
+		
+		JLabel finalGradeLabel = new JLabel("Final GRADE:");
+		finalGradeLabel.setBounds(78, 163, 155, 14);
+		contentPane.add(finalGradeLabel);
+		
+		JLabel notesLabel = new JLabel("Notes:");
+		notesLabel.setBounds(78, 215, 139, 14);
+		contentPane.add(notesLabel);
+		
+		notesTF = new JTextField();
+		notesTF.setBounds(243, 212, 331, 20);
+		notesTF.setText(notes);
+		contentPane.add(notesTF);
+		notesTF.setColumns(10);
+		
+		JButton editAssessmentBtn = new JButton("Edit");
+		
+		editAssessmentBtn.setBounds(358, 277, 89, 23);
+		contentPane.add(editAssessmentBtn);
+		
+		JComboBox studentFacultyNumberCB = new JComboBox();
+		studentFacultyNumberCB.setBounds(243, 68, 331, 18);
+		contentPane.add(studentFacultyNumberCB);
+		try {
+			populateComboBox(studentFacultyNumberCB, "STUDENTS",7);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		JComboBox courseNameCB = new JComboBox();
+		courseNameCB.setBounds(243, 107, 331, 22);
+		contentPane.add(courseNameCB);
+		
+		JComboBox finalGradeCB = new JComboBox();
+		finalGradeCB.setBounds(243, 160, 83, 20);
+		contentPane.add(finalGradeCB);
+		finalGradeCB.setSelectedItem(finalGrade);
+		
+		
+		JLabel ErrorLabel = new JLabel("");
+		ErrorLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		ErrorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		ErrorLabel.setBounds(137, 403, 508, 23);
+		contentPane.add(ErrorLabel);
+        
+        
+		editAssessmentBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String a = studentFacultyNumberCB.getSelectedItem().toString();
+				String b = courseNameCB.getSelectedItem().toString();
+				int c = Integer.parseInt(finalGradeCB.getSelectedItem().toString());
+				String d = notesTF.getText();
+				if(d.isEmpty()) {
+					ErrorLabel.setForeground(new Color(255, 51, 0));
+					ErrorLabel.setText("You have inserted wrong values or empty one!");
+				}else {
+					
+					conn=DbConnection.getConnection();
+					int COURSE_ID = MainFrame.courses_ids.get(selectedItemIndex);
+					String sql = "UPDATE COURSES "
+							+ " SET COURSE_NAME = ?, TEACHER_NAME = ?,CREDIT_HOURS = ?,DESCRIPTION = ? "
+							+ " WHERE COURSE_ID = " + COURSE_ID;
+					
+					try {
+						state=conn.prepareStatement(sql);
+						state.setString(1, a);
+						state.setString(2, b);
+						state.setInt(3,c);
+						state.setString(4, d);
+						state.execute();
+						
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					ErrorLabel.setForeground(new Color(4, 184, 25));
+					ErrorLabel.setText("The Course is updated succsessfully");
+					
+					
+				}
+	}
+	});
+        
+        
+        setVisible(true);
+	}
+        
+	
+	    @SuppressWarnings({ "rawtypes", "unchecked" })
+		private void populateComboBox(JComboBox comboBox, String table, int column) throws SQLException{
+		conn = DbConnection.getConnection();
+	    String query = "SELECT * FROM " + table;
+	    DefaultComboBoxModel model = new DefaultComboBoxModel();
+
+	    Statement statement = conn.createStatement();
+	    ResultSet resultSet = statement.executeQuery(query); //run your query
+
+	    while (resultSet.next()) //go through each row that your query returns
+	    {
+	        model.addElement(resultSet.getString(column));       
+	    }
+	    comboBox.setModel(model);
+
+	    resultSet.close();
+	    statement.close();
+	
+	}
+}

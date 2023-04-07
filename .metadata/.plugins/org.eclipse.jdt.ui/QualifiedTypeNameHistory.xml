@@ -12,7 +12,6 @@
     <fullyQualifiedTypeName name="frames.StudentAddFrame"/>
     <fullyQualifiedTypeName name="frames.CourseAddFrame"/>
     <fullyQualifiedTypeName name="javax.swing.DefaultListModel"/>
-    <fullyQualifiedTypeName name="java.sql.SQLException"/>
     <fullyQualifiedTypeName name="java.sql.ResultSetMetaData"/>
     <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
     <fullyQualifiedTypeName name="frames.StudentEditFrame"/>
@@ -32,4 +31,5 @@
     <fullyQualifiedTypeName name="java.time.LocalDate"/>
     <fullyQualifiedTypeName name="frames.AssessmentAddFrame"/>
     <fullyQualifiedTypeName name="frames.AssessmentSearchFrame"/>
+    <fullyQualifiedTypeName name="java.sql.SQLException"/>
 </qualifiedTypeNameHistroy>

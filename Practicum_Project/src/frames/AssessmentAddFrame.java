@@ -158,7 +158,7 @@ public class AssessmentAddFrame extends JFrame {
 					}
 					
 					ErrorLabel.setForeground(new Color(4, 184, 25));
-					ErrorLabel.setText("The New Course is added succsessfully");
+					ErrorLabel.setText("The New Assessment is added succsessfully");
 					
 					
 				}
@@ -172,7 +172,7 @@ public class AssessmentAddFrame extends JFrame {
 
 }
 	    @SuppressWarnings({ "rawtypes", "unchecked" })
-	    public void populateComboBox(JComboBox comboBox, String table, int column) throws SQLException{
+	    private void populateComboBox(JComboBox comboBox, String table, int column) throws SQLException{
 		conn = DbConnection.getConnection();
 	    String query = "SELECT * FROM " + table;
 	    DefaultComboBoxModel model = new DefaultComboBoxModel();
