@@ -37,8 +37,7 @@ public class StudentEditFrame extends JFrame {
 	PreparedStatement state;
 	ResultSet result;
 
-	
-
+	//something
 	/**
 	 * Create the frame.
 	 */
