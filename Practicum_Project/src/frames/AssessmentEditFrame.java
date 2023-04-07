@@ -23,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import repository.DbConnection;
 
 import javax.swing.JComboBox;
+import java.awt.Cursor;
 
 @SuppressWarnings("serial")
 public class AssessmentEditFrame extends JFrame {
@@ -81,6 +82,7 @@ public class AssessmentEditFrame extends JFrame {
 		notesTF.setColumns(10);
 		
 		JButton editAssessmentBtn = new JButton("Edit");
+		editAssessmentBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
 		editAssessmentBtn.setBounds(358, 277, 89, 23);
 		contentPane.add(editAssessmentBtn);

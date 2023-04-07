@@ -18,7 +18,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import repository.DbConnection;
-import java.awt.Cursor;
 
 @SuppressWarnings("serial")
 public class CourseEditFrame extends JFrame {
@@ -96,7 +95,6 @@ public class CourseEditFrame extends JFrame {
 		descriptionTF.setColumns(10);
 		
 		JButton editCourseBtn = new JButton("Edit");
-		editCourseBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
 		editCourseBtn.setBounds(359, 296, 89, 23);
 		contentPane.add(editCourseBtn);

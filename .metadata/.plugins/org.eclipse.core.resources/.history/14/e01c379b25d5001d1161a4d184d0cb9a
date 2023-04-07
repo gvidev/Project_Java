@@ -8,11 +8,9 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,13 +23,16 @@ import javax.swing.border.EmptyBorder;
 import repository.DbConnection;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 
 @SuppressWarnings("serial")
 public class AssessmentAddFrame extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField notesTF;
+	@SuppressWarnings("rawtypes")
+	private JComboBox studentFacultyNumberCB;
+	@SuppressWarnings("rawtypes")
+	private JComboBox courseNameCB;
 	
 	Connection conn;
 	
@@ -54,20 +55,20 @@ public class AssessmentAddFrame extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel studentFacultyNumberLabel = new JLabel("Student Name:");
-		studentFacultyNumberLabel.setBounds(113, 72, 120, 14);
+		JLabel studentFacultyNumberLabel = new JLabel("Student Faculty Number:");
+		studentFacultyNumberLabel.setBounds(88, 70, 138, 14);
 		contentPane.add(studentFacultyNumberLabel);
 		
 		JLabel courseNameLabel = new JLabel("Course Name:");
-		courseNameLabel.setBounds(113, 115, 120, 14);
+		courseNameLabel.setBounds(88, 114, 120, 14);
 		contentPane.add(courseNameLabel);
 		
 		JLabel notesLabel = new JLabel("Notes:");
-		notesLabel.setBounds(113, 202, 120, 14);
+		notesLabel.setBounds(88, 202, 120, 14);
 		contentPane.add(notesLabel);
 		
 		JLabel finalGradeLabel = new JLabel("Final GRADE:");
-		finalGradeLabel.setBounds(113, 162, 120, 14);
+		finalGradeLabel.setBounds(88, 161, 120, 14);
 		contentPane.add(finalGradeLabel);
 		
 		notesTF = new JTextField();
@@ -75,13 +76,24 @@ public class AssessmentAddFrame extends JFrame {
 		contentPane.add(notesTF);
 		notesTF.setColumns(10);
 		
-		JComboBox studentFacultyNumberCB = new JComboBox();
+		studentFacultyNumberCB = new JComboBox();
 		studentFacultyNumberCB.setBounds(245, 68, 329, 18);
 		contentPane.add(studentFacultyNumberCB);
+		try {
+			populateComboBox(studentFacultyNumberCB, "STUDENTS",7);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
-		JComboBox courseNameCB = new JComboBox();
+		
+	    courseNameCB = new JComboBox();
 		courseNameCB.setBounds(243, 111, 331, 20);
 		contentPane.add(courseNameCB);
+		try {
+			populateComboBox(courseNameCB, "COURSES",2);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 		JComboBox gradeCB = new JComboBox();
 		gradeCB.setModel(new DefaultComboBoxModel(new String[] {"2", "3", "4", "5", "6"}));
@@ -109,8 +121,6 @@ public class AssessmentAddFrame extends JFrame {
 				String b = courseNameCB.getSelectedItem().toString();
 				int c = Integer.parseInt(gradeCB.getSelectedItem().toString());
 				String d = notesTF.getText();
-				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
-				LocalDateTime now = LocalDateTime.now();
 				
 				String student_sql = "SELECT  TOP(1) STUDENT_ID FROM STUDENTS WHERE FACULTY_NUMBER = '" + a + "'";
 				String course_sql = "SELECT  TOP(1) COURSE_ID FROM COURSES WHERE COURSE_NAME =  '" + b + "'";
@@ -122,14 +132,16 @@ public class AssessmentAddFrame extends JFrame {
 				}else {
 					
 					conn=DbConnection.getConnection();
-					String sql = "INSERT INTO ASSESSMENT (STUDENT_ID,COURSE_ID,FINAL_GRADE,NOTES,ASSESSMENT_DATE) VALUES (?,?,?,?,?)";
+					String sql = "INSERT INTO ASSESSMENTS (STUDENT_ID,COURSE_ID,FINAL_GRADE,NOTES,ASSESSMENT_DATE) VALUES (?,?,?,?,?)";
 					
 					try {
 						student_state = conn.createStatement();
 						resultSet = student_state.executeQuery(student_sql);
+						resultSet.next();
 						int student_id = resultSet.getInt(1);
 						course_state = conn.createStatement();
 						resultSet = course_state.executeQuery(course_sql);
+						resultSet.next();
 						int course_id = resultSet.getInt(1);
 						
 						state=conn.prepareStatement(sql);
@@ -137,7 +149,7 @@ public class AssessmentAddFrame extends JFrame {
 						state.setInt(2, course_id);
 						state.setInt(3,c);
 						state.setString(4, d);
-						state.setString(5, dtf.format(now));
+						state.setDate(5, java.sql.Date.valueOf(LocalDate.now()));
 						state.execute();
 						
 					} catch (SQLException e1) {
@@ -146,7 +158,7 @@ public class AssessmentAddFrame extends JFrame {
 					}
 					
 					ErrorLabel.setForeground(new Color(4, 184, 25));
-					ErrorLabel.setText("The New Course is added succsessfully");
+					ErrorLabel.setText("The New Assessment is added succsessfully");
 					
 					
 				}
@@ -159,19 +171,20 @@ public class AssessmentAddFrame extends JFrame {
         setVisible(true);
 
 }
-	private void populateComboBox(JComboBox comboBox, String table) throws SQLException{
+	    @SuppressWarnings({ "rawtypes", "unchecked" })
+	    private void populateComboBox(JComboBox comboBox, String table, int column) throws SQLException{
 		conn = DbConnection.getConnection();
 	    String query = "SELECT * FROM " + table;
+	    DefaultComboBoxModel model = new DefaultComboBoxModel();
 
 	    Statement statement = conn.createStatement();
 	    ResultSet resultSet = statement.executeQuery(query); //run your query
 
 	    while (resultSet.next()) //go through each row that your query returns
 	    {
-	        resultSet.getString(2));
-	        model.addElement(x); //add each item to the model
+	        model.addElement(resultSet.getString(column));       
 	    }
-	    list.setModel(model);
+	    comboBox.setModel(model);
 
 	    resultSet.close();
 	    statement.close();

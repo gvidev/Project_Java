@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Cursor;
 
 @SuppressWarnings("serial")
 public class StudentAddFrame extends JFrame {
@@ -104,6 +105,7 @@ public class StudentAddFrame extends JFrame {
 		facultyNumberTF.setColumns(10);
 		
 		JButton addStudentBtn = new JButton("Add");
+		addStudentBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
 		addStudentBtn.setBounds(358, 347, 89, 23);
 		contentPane.add(addStudentBtn);

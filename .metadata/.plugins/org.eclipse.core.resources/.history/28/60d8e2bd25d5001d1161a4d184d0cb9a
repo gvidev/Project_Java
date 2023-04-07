@@ -1,28 +1,27 @@
 package frames;
 
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import repository.DbConnection;
+
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import java.awt.event.ActionEvent;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-
-import repository.DbConnection;
-import java.awt.Cursor;
+import java.awt.Color;
+import java.awt.Font;
 
 @SuppressWarnings("serial")
-public class StudentEditFrame extends JFrame {
+public class StudentAddFrame extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField nameTF;
@@ -32,33 +31,23 @@ public class StudentEditFrame extends JFrame {
 	private JTextField phoneNumberTF;
 	private JTextField facultyNumberTF;
 	
-    Connection conn;
+	Connection conn;
 	
 	PreparedStatement state;
 	ResultSet result;
 
 	
-
 	/**
 	 * Create the frame.
 	 */
-	public StudentEditFrame(int selectedItemIndex, String selectedItem) {
-		
-		String[] data = selectedItem.split("\\|");
-		String name  = data[1].trim();
-		String email = data[2].trim();
-		String phoneNumber = data[3].trim();
-		String gender = data[4].trim();
-		String major = data[5].trim();
-		String facultyNumber = data[6].trim();
-
-		setTitle("Edit Student");
+	public StudentAddFrame() {
+		setTitle("Add New Student");
 		setBounds(150,150,800,600);
         setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);	
-        contentPane.setLayout(null);
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
 		
 		JLabel nameLabel = new JLabel("Name:");
 		nameLabel.setBounds(113, 72, 70, 14);
@@ -86,45 +75,38 @@ public class StudentEditFrame extends JFrame {
 		
 		nameTF = new JTextField();
 		nameTF.setBounds(246, 69, 331, 20);
-		nameTF.setText(name);
 		contentPane.add(nameTF);
 		nameTF.setColumns(10);
 		
 		emailTF = new JTextField();
 		emailTF.setBounds(246, 112, 331, 20);
-		emailTF.setText(email);
 		contentPane.add(emailTF);
 		emailTF.setColumns(10);
 		
 		genderTF = new JTextField();
 		genderTF.setBounds(246, 159, 331, 20);
-		genderTF.setText(gender);
 		contentPane.add(genderTF);
 		genderTF.setColumns(10);
 		
 		majorTF = new JTextField();
 		majorTF.setBounds(246, 199, 331, 20);
-		majorTF.setText(major);
 		contentPane.add(majorTF);
 		majorTF.setColumns(10);
 		
 		phoneNumberTF = new JTextField();
 		phoneNumberTF.setBounds(243, 242, 331, 20);
-		phoneNumberTF.setText(phoneNumber);
 		contentPane.add(phoneNumberTF);
 		phoneNumberTF.setColumns(10);
 		
 		facultyNumberTF = new JTextField();
 		facultyNumberTF.setBounds(243, 277, 331, 20);
-		facultyNumberTF.setText(facultyNumber);
 		contentPane.add(facultyNumberTF);
 		facultyNumberTF.setColumns(10);
 		
-		JButton editStudentBtn = new JButton("Edit");
-		editStudentBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		JButton addStudentBtn = new JButton("Add");
 		
-		editStudentBtn.setBounds(358, 347, 89, 23);
-		contentPane.add(editStudentBtn);
+		addStudentBtn.setBounds(358, 347, 89, 23);
+		contentPane.add(addStudentBtn);
 		
 		JLabel ErrorLabel = new JLabel("");
 		ErrorLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -133,7 +115,7 @@ public class StudentEditFrame extends JFrame {
 		contentPane.add(ErrorLabel);
         
         
-		editStudentBtn.addActionListener(new ActionListener() {
+        addStudentBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String a = nameTF.getText();
 				String b = emailTF.getText();
@@ -143,14 +125,11 @@ public class StudentEditFrame extends JFrame {
 				String g = facultyNumberTF.getText();
 				if(a.isEmpty() || b.isEmpty() || c.isEmpty() || d.isEmpty() || f.isEmpty() || g.isEmpty() || c.length()>10 || d.length()>10 || g.length()>10) {
 					ErrorLabel.setForeground(new Color(255, 51, 0));
-					ErrorLabel.setText("You have inserted wrong values or empty one!");
+					ErrorLabel.setText("Please insert all fields!");
 				}else {
 					
 					conn=DbConnection.getConnection();
-					int STUDENT_ID = MainFrame.students_ids.get(selectedItemIndex);
-					String sql = "UPDATE STUDENTS "
-							+ " SET NAME = ?, EMAIL = ?,PHONE_NUMBER = ?,GENDER = ?,MAJOR = ?,FACULTY_NUMBER = ? "
-							+ " WHERE STUDENT_ID = " + STUDENT_ID;
+					String sql = "INSERT INTO STUDENTS (NAME,EMAIL,PHONE_NUMBER,GENDER,MAJOR,FACULTY_NUMBER) VALUES (?,?,?,?,?,?)";
 					
 					try {
 						state=conn.prepareStatement(sql);
@@ -168,7 +147,7 @@ public class StudentEditFrame extends JFrame {
 					}
 					
 					ErrorLabel.setForeground(new Color(4, 184, 25));
-					ErrorLabel.setText("The Student is updated succsessfully");
+					ErrorLabel.setText("The New Students is added succsessfully");
 					
 					
 				}
@@ -178,5 +157,4 @@ public class StudentEditFrame extends JFrame {
         
         setVisible(true);
 	}
-
 }

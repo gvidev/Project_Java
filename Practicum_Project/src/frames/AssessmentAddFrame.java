@@ -23,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import repository.DbConnection;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.Cursor;
 
 @SuppressWarnings("serial")
 public class AssessmentAddFrame extends JFrame {
@@ -102,6 +103,7 @@ public class AssessmentAddFrame extends JFrame {
 		
 		
 		JButton addCourseBtn = new JButton("Add");
+		addCourseBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
 		addCourseBtn.setBounds(361, 291, 89, 23);
 		contentPane.add(addCourseBtn);

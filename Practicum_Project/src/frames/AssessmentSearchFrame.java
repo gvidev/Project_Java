@@ -22,6 +22,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import repository.DbConnection;
+import java.awt.Cursor;
 
 @SuppressWarnings("serial")
 public class AssessmentSearchFrame extends JFrame {
@@ -49,7 +50,7 @@ public class AssessmentSearchFrame extends JFrame {
         contentPane.setLayout(null);
         
         JComboBox comboBox = new JComboBox();
-        comboBox.setModel(new DefaultComboBoxModel(new String[] {"Student Name", "Course Name"}));
+        comboBox.setModel(new DefaultComboBoxModel(new String[] {"Student Name", "Course Name", "Faculty Number"}));
         comboBox.setFocusable(false);
         comboBox.setBounds(150, 115, 139, 31);
         contentPane.add(comboBox);
@@ -72,6 +73,7 @@ public class AssessmentSearchFrame extends JFrame {
         contentPane.add(errorLabel);
         
         JButton searchButton = new JButton("Search");
+        searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         searchButton.setFocusable(false);
         searchButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
@@ -87,7 +89,7 @@ public class AssessmentSearchFrame extends JFrame {
         			
         			switch(selected) {
         			case 0:
-        				searchBy = "STUDENT_NAME";
+        				searchBy = "NAME";
         				table = "STUDENTS";
         				join = "STUDENT_ID";
         				break;
@@ -97,11 +99,17 @@ public class AssessmentSearchFrame extends JFrame {
         				table = "COURSES";
         				join = "COURSE_ID";
         				break;
+        				
+        			case 2:
+        				searchBy = "FACULTY_NUMBER";
+        				table = "STUDENTS";
+        				join = "STUDENT_ID";
+        				break;
         			}
         			
         			conn = DbConnection.getConnection();
         			Statement statement;
-        			String sql = "SELECT * FROM ASSESSMENTS JOIN " + table + " ON ASSESSMENTS."+join+" = " + table + "." +join+" WHERE "+ searchBy + " LIKE '%" + input + "%'" ;
+        			String sql = "SELECT * FROM ASSESSMENTS JOIN " + table + " ON ASSESSMENTS."+join+" = " + table + "." +join+" WHERE "+ table+"."+ searchBy + " LIKE '%" + input + "%'" ;
         			findeditemsId = new ArrayList<Integer>();
         			
         			try {

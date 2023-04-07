@@ -19,7 +19,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import repository.DbConnection;
-import java.awt.Cursor;
 
 @SuppressWarnings("serial")
 public class StudentEditFrame extends JFrame {
@@ -121,7 +120,6 @@ public class StudentEditFrame extends JFrame {
 		facultyNumberTF.setColumns(10);
 		
 		JButton editStudentBtn = new JButton("Edit");
-		editStudentBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
 		editStudentBtn.setBounds(358, 347, 89, 23);
 		contentPane.add(editStudentBtn);
