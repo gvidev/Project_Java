@@ -90,12 +90,13 @@ public class AssessmentSearchFrame extends JFrame {
         searchButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		
-        		
-        		if(comboBox.getSelectedIndex() != comboBox2.getSelectedIndex()) {
-        		if(comboBox.getSelectedIndex() != -1 && !inputTextField.getText().isEmpty() && comboBox2.getSelectedIndex() != -1 && !inputTextField2.getText().isEmpty() ) {
+        		if(comboBox.getSelectedIndex() != -1 && !inputTextField.getText().isEmpty()) {
         			errorLabel.setText("");
         			
-            			
+        			if(comboBox2.getSelectedIndex() != -1 && !inputTextField2.getText().isEmpty()) {
+            			errorLabel.setText("");
+        			
+            			if(comboBox.getSelectedIndex() != comboBox2.getSelectedIndex()) {
             			
         			int selected = comboBox.getSelectedIndex();
         			String searchBy = null;
@@ -178,16 +179,16 @@ public class AssessmentSearchFrame extends JFrame {
 					} catch (Exception e2) {
 						// TODO: handle exception
 					}
-        			
+        			}
+        			else {
+        				errorLabel.setForeground(new Color(255, 0, 0));
+            			errorLabel.setText("Note that ComboBox must be different!");
+        			}
         		}
         		else {
         			errorLabel.setForeground(new Color(255, 0, 0));
         			errorLabel.setText("Please select from the box and fill the field!");
         		}
-        		}else {
-    				errorLabel.setForeground(new Color(255, 0, 0));
-        			errorLabel.setText("Note that ComboBox must be different!");
-    			}
         		
         		
         	}

@@ -92,7 +92,7 @@ public class AssessmentSearchFrame extends JFrame {
         		
         		
         		if(comboBox.getSelectedIndex() != comboBox2.getSelectedIndex()) {
-        		if(comboBox.getSelectedIndex() != -1 && !inputTextField.getText().isEmpty() && comboBox2.getSelectedIndex() != -1 && !inputTextField2.getText().isEmpty() ) {
+        		if(comboBox.getSelectedIndex() != -1 && !inputTextField.getText().isEmpty() || comboBox2.getSelectedIndex() != -1 && !inputTextField2.getText().isEmpty() ) {
         			errorLabel.setText("");
         			
             			
